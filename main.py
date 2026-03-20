@@ -1,30 +1,69 @@
-class Coffee:
+import os
+
+
+class MenuItem:
+    SIZES = {}
+
     def __init__(self, name, description, base_price):
         self.name = name
         self.description = description
         self.base_price = base_price
 
     def __str__(self):
-        return f"{self.name} - {self.description} - ${self.base_price:.2f}"
+        return f'{self.name} - {self.description} - {self.base_price:.2f}'
+
+    def display_sizes(self):
+        pass
+
+
+class Pizza(MenuItem):
+    def __init__(self, name, description, base_price):
+        super().__init__(name, description, base_price)
+        self.SIZES = {
+            'Small': 1.0,
+            'Medium': 1.3,
+            'Large': 1.6,
+        }
+
+    def display_sizes(self):
+        print('\nSizes available:')
+        index = 1
+        for size, mult in self.SIZES.items():
+            print(f'{index}. {size} (+${mult})')
+            index += 1
+
+
+class Coffee(MenuItem):
+    def __init__(self, name, description, base_price):
+        super().__init__(name, description, base_price)
+        self.SIZES = {
+            'Small': 0.00,
+            'Medium': 0.50,
+            'Large': 1.00
+        }
+
+    def display_sizes(self):
+        print('\nSizes available:')
+        index = 1
+        for size, mult in self.SIZES.items():
+            print(f'{index}. {size} (+${mult})')
+            index += 1
 
 
 class Order:
-    SIZE_PRICES = {
-        "Small": 0.00,
-        "Medium": 0.50,
-        "Large": 1.00
-    }
-
-    def __init__(self, coffee, size):
-        self.coffee = coffee
+    def __init__(self, item, size):
+        self.item = item
         self.size = size
         self.price = self.calculate_price()
 
     def calculate_price(self):
-        return self.coffee.base_price + self.SIZE_PRICES[self.size]
+        if isinstance(self.item, Coffee) or isinstance(self.item, Pizza):
+            return self.item.base_price * self.item.SIZES[self.size]
+
+        return self.item.base_price
 
     def __str__(self):
-        return f"{self.size} {self.coffee.name} - ${self.price:.2f}"
+        return f'{self.size} {self.item.name} - ${self.price:.2f}'
 
 
 class Cafe:
@@ -34,22 +73,17 @@ class Cafe:
         self.orders = []
         self.tax_rate = tax_rate
 
-    def add_to_menu(self, coffee):
-        self.menu.append(coffee)
+    def add_to_menu(self, item):
+        self.menu.append(item)
 
     def display_menu(self):
-        print(f"\n=== {self.name.upper()} MENU ===")
-        for i, coffee in enumerate(self.menu, start=1):
-            print(f"{i}. {coffee}")
+        print(f'\n=== {self.name.upper()} MENU ===')
+        for i, item in enumerate(self.menu, start=1):
+            item_type = item.__class__.__name__
+            print(f"{i}. [{item_type}] {item}")
 
-    def display_sizes(self):
-        print("\nSizes available:")
-        print("1. Small  (+$0.00)")
-        print("2. Medium (+$0.50)")
-        print("3. Large  (+$1.00)")
-
-    def add_order(self, coffee, size):
-        order = Order(coffee, size)
+    def add_order(self, item, size):
+        order = Order(item, size)
         self.orders.append(order)
         print(f"\n✅ Added: {order}")
 
@@ -62,20 +96,20 @@ class Cafe:
         tip = subtotal * (tip_percent / 100)
         total = subtotal + tax + tip
 
-        print("\n" + "="*42)
+        print("\n" + "=" * 42)
         print(f"{self.name.upper()} — YOUR BILL".center(42))
-        print("="*42)
+        print("=" * 42)
 
         for order in self.orders:
             print(f"{str(order):<30} ${order.price:>6.2f}")
 
-        print("-"*42)
+        print("-" * 42)
         print(f"{'Subtotal:':<30} ${subtotal:>6.2f}")
-        print(f"{(f'Tax '+f'({(self.tax_rate*100):g}%)'):<30} ${tax:>6.2f}")
+        print(f"{(f'Tax ' + f'({(self.tax_rate * 100):g}%)'):<30} ${tax:>6.2f}")
         print(f"{f'Tip ({tip_percent:g}%):':<30} ${tip:>6.2f}")
-        print("="*42)
+        print("=" * 42)
         print(f"{'TOTAL:':<30} ${total:>6.2f}")
-        print("="*42)
+        print("=" * 42)
 
 
 # ------------------------
@@ -83,6 +117,7 @@ class Cafe:
 # ------------------------
 cafe = Cafe("Sunny Bean Café", tax_rate=0.08)
 
+# Add coffe
 cafe.add_to_menu(Coffee("Espresso", "Strong and bold shot of coffee", 2.50))
 cafe.add_to_menu(Coffee("Americano", "Espresso diluted with hot water", 3.00))
 cafe.add_to_menu(Coffee("Cappuccino", "Equal parts espresso, foam, and milk", 3.75))
@@ -91,9 +126,10 @@ cafe.add_to_menu(Coffee("Flat White", "Velvety milk with a double espresso shot"
 cafe.add_to_menu(Coffee("Macchiato", "Espresso with a touch of foam", 3.25))
 cafe.add_to_menu(Coffee("Mocha", "Espresso with chocolate and milk", 4.25))
 cafe.add_to_menu(Coffee("Cold Brew", "Slow-steeped coffee served cold", 4.00))
+# Add pizza
+cafe.add_to_menu(Pizza('Margherita', 'Tomato, mozzarella, basil', 8.00))
+cafe.add_to_menu(Pizza('Pepperoni', 'Pepperoni and cheeze', 10.00))
 
-
-SIZES = ["Small", "Medium", "Large"]
 
 print(f"\nWelcome to {cafe.name}! ☕")
 
@@ -101,11 +137,11 @@ print(f"\nWelcome to {cafe.name}! ☕")
 # MAIN LOOP
 # ------------------------
 while True:
-    print("\n" + "="*40)
-    print("1. Order drink")
+    print("\n" + "=" * 40)
+    print("1. Make order")
     print("2. View order")
     print("3. Checkout")
-    print("="*40)
+    print("=" * 40)
 
     choice = input("Choose (1/2/3): ").strip()
 
@@ -127,7 +163,7 @@ while True:
 
         selected = cafe.menu[idx]
 
-        cafe.display_sizes()
+        selected.display_sizes()
         size_input = input("Choose size: ").strip()
 
         if not size_input.isdigit():
@@ -135,18 +171,19 @@ while True:
             continue
 
         size_idx = int(size_input) - 1
-        if size_idx < 0 or size_idx >= len(SIZES):
+        if size_idx < 0 or size_idx >= len(selected.SIZES):
             print("❌ Invalid size")
             continue
 
-        cafe.add_order(selected, SIZES[size_idx])
+        cafe.add_order(selected, list(selected.SIZES.keys())[size_idx])
 
     elif choice == "2":
         if not cafe.orders:
             print("🛒 No items yet")
         else:
             for i, order in enumerate(cafe.orders, 1):
-                print(f"{i}. {order}")
+                item_type = order.item.__class__.__name__
+                print(f"{i}. [{item_type}] {order}")
             print(f"Subtotal: ${cafe.calculate_subtotal():.2f}")
 
     elif choice == "3":
