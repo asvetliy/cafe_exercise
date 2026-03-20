@@ -71,8 +71,8 @@ class Cafe:
 
         print("-"*42)
         print(f"{'Subtotal:':<30} ${subtotal:>6.2f}")
-        print(f"{(f'Tax '+f'({self.tax_rate*100}%)'):<30} ${tax:>6.2f}")
-        print(f"{f'Tip ({tip_percent}%):':<30} ${tip:>6.2f}")
+        print(f"{(f'Tax '+f'({(self.tax_rate*100):g}%)'):<30} ${tax:>6.2f}")
+        print(f"{f'Tip ({tip_percent:g}%):':<30} ${tip:>6.2f}")
         print("="*42)
         print(f"{'TOTAL:':<30} ${total:>6.2f}")
         print("="*42)
