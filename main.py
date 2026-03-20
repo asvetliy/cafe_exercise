@@ -130,13 +130,19 @@ cafe.add_to_menu(Coffee("Cold Brew", "Slow-steeped coffee served cold", 4.00))
 cafe.add_to_menu(Pizza('Margherita', 'Tomato, mozzarella, basil', 8.00))
 cafe.add_to_menu(Pizza('Pepperoni', 'Pepperoni and cheeze', 10.00))
 
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
-print(f"\nWelcome to {cafe.name}! ☕")
+def pause():
+    input('\nPress Enter to continue...')
+
+print(f'\nWelcome to {cafe.name}! ☕')
 
 # ------------------------
 # MAIN LOOP
 # ------------------------
 while True:
+    clear_screen()
     print("\n" + "=" * 40)
     print("1. Make order")
     print("2. View order")
@@ -146,6 +152,7 @@ while True:
     choice = input("Choose (1/2/3): ").strip()
 
     if choice == "1":
+        clear_screen()
         cafe.display_menu()
 
         drink = input("Select drink number (0 to cancel): ").strip()
@@ -176,8 +183,10 @@ while True:
             continue
 
         cafe.add_order(selected, list(selected.SIZES.keys())[size_idx])
+        pause()
 
     elif choice == "2":
+        clear_screen()
         if not cafe.orders:
             print("🛒 No items yet")
         else:
@@ -185,17 +194,23 @@ while True:
                 item_type = order.item.__class__.__name__
                 print(f"{i}. [{item_type}] {order}")
             print(f"Subtotal: ${cafe.calculate_subtotal():.2f}")
+        pause()
 
     elif choice == "3":
         if not cafe.orders:
+            clear_screen()
             print("❌ Order something first")
+            pause()
             continue
 
         tip_choice = input("Tip (10/15/20/0): ").strip()
         tip = int(tip_choice) if tip_choice.isdigit() else 0
 
         cafe.print_bill(tip)
+        pause()
         break
 
     else:
+        clear_screen()
         print("❌ Invalid option")
+        pause()
