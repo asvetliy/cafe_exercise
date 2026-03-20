@@ -155,17 +155,21 @@ while True:
         clear_screen()
         cafe.display_menu()
 
-        drink = input("Select drink number (0 to cancel): ").strip()
+        drink = input("Select item number (0 to cancel): ").strip()
         if drink == "0":
             continue
 
         if not drink.isdigit():
+            clear_screen()
             print("❌ Invalid input")
+            pause()
             continue
 
         idx = int(drink) - 1
         if idx < 0 or idx >= len(cafe.menu):
+            clear_screen()
             print("❌ Invalid choice")
+            pause()
             continue
 
         selected = cafe.menu[idx]
@@ -174,12 +178,16 @@ while True:
         size_input = input("Choose size: ").strip()
 
         if not size_input.isdigit():
+            clear_screen()
             print("❌ Invalid input")
+            pause()
             continue
 
         size_idx = int(size_input) - 1
         if size_idx < 0 or size_idx >= len(selected.SIZES):
+            clear_screen()
             print("❌ Invalid size")
+            pause()
             continue
 
         cafe.add_order(selected, list(selected.SIZES.keys())[size_idx])
